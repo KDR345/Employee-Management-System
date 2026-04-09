@@ -83,7 +83,8 @@ const App = () => {
   const [userData, setUserData] = useContext(AuthContext);
 
   useEffect(() => {
-    const loggedInUser = localStorage.getItem("loggedInUser");
+    localStorage.removeItem("loggedInUser"); // Force clear old infinite sessions from earlier
+    const loggedInUser = sessionStorage.getItem("loggedInUser");
     if (loggedInUser) {
       const parsedUser = JSON.parse(loggedInUser);
       setUser(parsedUser.role);
@@ -104,7 +105,7 @@ const App = () => {
       if (response.ok) {
         setUser(data.user.role);
         setLoggedInUserData(data.user.role === 'employee' ? { ...data.user, tasks: data.tasks } : data.user);
-        localStorage.setItem(
+        sessionStorage.setItem(
           "loggedInUser",
           JSON.stringify({ role: data.user.role, data: data.user.role === 'employee' ? { ...data.user, tasks: data.tasks } : data.user })
         );

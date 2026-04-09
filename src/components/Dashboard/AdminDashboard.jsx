@@ -5,6 +5,7 @@ import AllTask from "../../Design Element/AllTask";
 import AdminAttendanceView from "../Attendance/AdminAttendanceView";
 import AdminLeaveView from "../Leaves/AdminLeaveView";
 import AddEmployee from "./AddEmployee";
+import AdminPayroll from "../Payroll/AdminPayroll";
 import { AuthContext } from "../../context/AuthProvider";
 
 const AdminDashboard = (props) => {
@@ -26,7 +27,7 @@ const AdminDashboard = (props) => {
   }, []);
 
   return (
-    <div className="min-h-screen w-full p-8 bg-gradient-to-br from-gray-900 to-black text-white">
+    <div className="min-h-screen w-full p-8 text-white">
       <Header changeUser={props.changeUser} />
 
       {/* Tab Navigation */}
@@ -34,8 +35,8 @@ const AdminDashboard = (props) => {
         <button
           onClick={() => setActiveTab("tasks")}
           className={`px-8 py-3 rounded-full font-bold transition-all whitespace-nowrap ${activeTab === "tasks"
-            ? "bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)]"
-            : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+            ? "bg-white/20 backdrop-blur-md border border-white/40 text-white shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]"
+            : "bg-white/5 backdrop-blur-sm border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
             }`}
         >
           Manage Tasks
@@ -43,8 +44,8 @@ const AdminDashboard = (props) => {
         <button
           onClick={() => setActiveTab("attendance")}
           className={`px-8 py-3 rounded-full font-bold transition-all whitespace-nowrap ${activeTab === "attendance"
-            ? "bg-emerald-600 text-white shadow-[0_0_15px_rgba(5,150,105,0.5)]"
-            : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+            ? "bg-white/20 backdrop-blur-md border border-white/40 text-white shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]"
+            : "bg-white/5 backdrop-blur-sm border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
             }`}
         >
           View Attendance
@@ -52,8 +53,8 @@ const AdminDashboard = (props) => {
         <button
           onClick={() => setActiveTab("leaves")}
           className={`px-8 py-3 rounded-full font-bold transition-all whitespace-nowrap ${activeTab === "leaves"
-            ? "bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.5)]"
-            : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+            ? "bg-white/20 backdrop-blur-md border border-white/40 text-white shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]"
+            : "bg-white/5 backdrop-blur-sm border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
             }`}
         >
           Manage Leaves
@@ -61,11 +62,20 @@ const AdminDashboard = (props) => {
         <button
           onClick={() => setActiveTab("add_employee")}
           className={`px-8 py-3 rounded-full font-bold transition-all whitespace-nowrap ${activeTab === "add_employee"
-            ? "bg-orange-600 text-white shadow-[0_0_15px_rgba(234,88,12,0.5)]"
-            : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+            ? "bg-white/20 backdrop-blur-md border border-white/40 text-white shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]"
+            : "bg-white/5 backdrop-blur-sm border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
             }`}
         >
           Add Employee
+        </button>
+        <button
+          onClick={() => setActiveTab("payroll")}
+          className={`px-8 py-3 rounded-full font-bold transition-all whitespace-nowrap ${activeTab === "payroll"
+            ? "bg-white/20 backdrop-blur-md border border-white/40 text-white shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]"
+            : "bg-white/5 backdrop-blur-sm border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
+            }`}
+        >
+          Manage Payroll
         </button>
       </div>
 
@@ -93,6 +103,12 @@ const AdminDashboard = (props) => {
         {activeTab === "add_employee" && (
           <div className="animate-fade-in">
             <AddEmployee fetchEmployees={fetchEmployees} />
+          </div>
+        )}
+
+        {activeTab === "payroll" && (
+          <div className="animate-fade-in">
+            <AdminPayroll />
           </div>
         )}
       </div>

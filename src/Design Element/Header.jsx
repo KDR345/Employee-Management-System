@@ -2,12 +2,13 @@ import React from "react";
 
 export const Header = (props) => {
   const logOutUser = () => {
-    localStorage.removeItem("loggedInUser");
+    sessionStorage.removeItem("loggedInUser");
+    localStorage.removeItem("loggedInUser"); // Fallback clear
     props.changeUser(null);
   };
 
   return (
-    <div className="flex items-end justify-between bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-2xl shadow-xl">
+    <div className="flex items-end justify-between bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]">
       <h1 className="text-2xl text-gray-300 font-medium">
         Hello, <br />{" "}
         <span className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">

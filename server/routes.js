@@ -1,5 +1,6 @@
 import express from 'express';
 import db from './database.js';
+import { sendWelcomeEmail, sendTaskNotification, sendLeaveNotification, sendPayslipEmail } from './emailService.js';
 
 const router = express.Router();
 
@@ -64,6 +65,10 @@ router.post('/employees', (req, res) => {
             }
             return res.status(500).json({ error: err.message });
         }
+        
+        // Asynchronously send the welcome email
+        sendWelcomeEmail(email, name, password);
+
         res.status(201).json({ message: 'Employee added successfully', id: this.lastID });
     });
 });
@@ -80,6 +85,14 @@ router.post('/tasks', (req, res) => {
 
     db.run(query, params, function (err) {
         if (err) return res.status(500).json({ error: err.message });
+
+        // Find the user's email to send the notification
+        db.get('SELECT name, email FROM users WHERE id = ?', [userId], (err, user) => {
+            if (!err && user) {
+                sendTaskNotification(user.email, user.name, title, description, date, category);
+            }
+        });
+
         res.json({ message: 'Task created successfully', id: this.lastID });
     });
 });
@@ -189,7 +202,58 @@ router.put('/leaves/:id', (req, res) => {
     const query = `UPDATE leaves SET status = ? WHERE id = ?`;
     db.run(query, [status, id], function (err) {
         if (err) return res.status(500).json({ error: err.message });
+
+        // Retrieve the user email to send the leave update notification
+        db.get('SELECT u.name, u.email FROM leaves l JOIN users u ON l.userId = u.id WHERE l.id = ?', [id], (err, user) => {
+            if (!err && user) {
+                sendLeaveNotification(user.email, user.name, status);
+            }
+        });
+
         res.json({ message: 'Leave status updated successfully' });
+    });
+});
+
+// --- PAYROLL ROUTES ---
+
+// Generate payroll
+router.post('/payroll', (req, res) => {
+    const { employee_id, period_start, period_end, gross_amount } = req.body;
+    if (!employee_id || !period_start || !period_end || !gross_amount) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const taxes = gross_amount * 0.15;
+    const net_amount = gross_amount - taxes;
+
+    const query = `INSERT INTO payroll (employee_id, period_start, period_end, gross_amount, taxes, net_amount) VALUES (?, ?, ?, ?, ?, ?)`;
+    db.run(query, [employee_id, period_start, period_end, gross_amount, taxes, net_amount], function (err) {
+        if (err) return res.status(500).json({ error: err.message });
+
+        db.get('SELECT name, email FROM users WHERE id = ?', [employee_id], (err, user) => {
+            if (!err && user) {
+                sendPayslipEmail(user.email, user.name, period_start, period_end, Number(gross_amount), taxes, net_amount);
+            }
+        });
+
+        res.json({ message: 'Payroll generated successfully', id: this.lastID });
+    });
+});
+
+// Get payroll
+router.get('/payroll', (req, res) => {
+    const { userId } = req.query;
+    let query = `SELECT p.*, u.name as employeeName FROM payroll p JOIN users u ON p.employee_id = u.id ORDER BY p.period_end DESC`;
+    const params = [];
+
+    if (userId) {
+        query = `SELECT * FROM payroll WHERE employee_id = ? ORDER BY period_end DESC`;
+        params.push(userId);
+    }
+
+    db.all(query, params, (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
     });
 });
 

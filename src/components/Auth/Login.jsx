@@ -16,8 +16,8 @@ export function Login({ HandleLogin }) {
   };
   return (
     <>
-      <div className="flex h-screen w-screen items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-black">
-        <div className="w-full max-w-md p-8 bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl">
+      <div className="flex h-screen w-screen items-center justify-center">
+        <div className="w-full max-w-md p-8 bg-white/10 backdrop-blur-md border border-white/30 rounded-2xl shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]">
           <h2 className="text-3xl font-bold text-center text-white mb-8">Welcome Back</h2>
           <form
             onSubmit={(e) => {

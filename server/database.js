@@ -58,6 +58,19 @@ const db = new sqlite3.Database(dbPath, (err) => {
         FOREIGN KEY(userId) REFERENCES users(id)
       )`);
 
+            // Create Payroll table
+            db.run(`CREATE TABLE IF NOT EXISTS payroll (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        employee_id INTEGER,
+        period_start DATE,
+        period_end DATE,
+        gross_amount REAL,
+        taxes REAL,
+        net_amount REAL,
+        status TEXT DEFAULT 'Processed' CHECK(status IN ('Pending', 'Processed', 'Failed')),
+        FOREIGN KEY(employee_id) REFERENCES users(id)
+      )`);
+
             // Seed admin and some employee data if the users table is empty
             db.get('SELECT COUNT(*) as count FROM users', (err, row) => {
                 if (row && row.count === 0) {

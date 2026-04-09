@@ -1,26 +1,33 @@
-import db from './database.js';
+import sqlite3 from 'sqlite3';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-console.log("--- Users ---");
-db.all("SELECT * FROM users", (err, rows) => {
-    if (err) console.error(err);
-    else console.table(rows);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const dbPath = path.resolve(__dirname, 'ems.sqlite');
 
-    console.log("\n--- Tasks ---");
-    db.all("SELECT * FROM tasks", (err, rows) => {
+const db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+        console.error('Error opening database', err.message);
+        return;
+    }
+    
+    console.log("--- 🧑‍💼 USERS TABLE ---");
+    db.all("SELECT * FROM users", [], (err, rows) => {
         if (err) console.error(err);
         else console.table(rows);
-
-        console.log("\n--- Attendance ---");
-        db.all("SELECT * FROM attendance", (err, rows) => {
-            if (err) console.error(err);
+        
+        console.log("\n--- 💰 PAYROLL TABLE ---");
+        db.all("SELECT * FROM payroll", [], (err, rows) => {
+            if (err) console.error("Payroll table runs into issue:", err.message);
             else console.table(rows);
-
-            console.log("\n--- Leave Requests ---");
-            db.all("SELECT * FROM leaves", (err, rows) => {
+            
+            console.log("\n--- 📅 ATTENDANCE TABLE ---");
+            db.all("SELECT * FROM attendance LIMIT 5", [], (err, rows) => {
                 if (err) console.error(err);
                 else console.table(rows);
-
-                process.exit(0);
+                
+                db.close();
             });
         });
     });
